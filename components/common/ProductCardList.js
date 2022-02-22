@@ -1,5 +1,5 @@
 import { ProductCard } from '.';
-import data from '../../data';
+import data from '../../utils/data';
 
 export const ProductCardList = () => {
   return (

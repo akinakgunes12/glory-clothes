@@ -1,16 +1,30 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Head from 'next/head';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Container } from '@mui/material';
+import { Container, Switch } from '@mui/material';
 import Link from 'next/link';
+import { Store } from '../utils/Store';
+import Cookies from 'js-cookie';
 
-export default function Layout({ children }) {
+export default function Layout({ title, description, children }) {
+  const { state, dispatch, colors } = useContext(Store);
+  const { darkMode } = state;
+
+  const darkModeChangeHandler = () => {
+    dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });
+    const newDarkMode = !darkMode;
+    Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
+  };
+
   return (
-    <div>
+    <div
+      style={{ color: colors.text, backgroundColor: colors.backgroundColor }}
+    >
       <Head>
-        <title>Glory Clothes</title>
+        <title>{title ? `${title} - Glory Fashion` : 'Glory Clothes'}</title>
+        {description && <meta name="description" content={description}></meta>}
       </Head>
 
       <AppBar position="static" sx={{ backgroundColor: '#263238' }}>
@@ -23,14 +37,18 @@ export default function Layout({ children }) {
           </Link>
 
           {/** Nav Links **/}
-          <div className="flex gap-4">
+          <div className="flex gap-5 items-center">
+            <Switch
+              checked={darkMode}
+              onChange={darkModeChangeHandler}
+            ></Switch>
             <Link href="/login"> Cart</Link>
             <Link href="/card">Login</Link>
           </div>
         </Toolbar>
       </AppBar>
 
-      <Container sx={{ minHeight: '80vh' }}>{children}</Container>
+      <Container sx={{ minHeight: '85vh' }}>{children}</Container>
       <footer>
         <Typography align="center" sx={{ fontWeight: 'bold' }}>
           All rights reserved. Glory Fashion
