@@ -5,6 +5,11 @@ export const Store = createContext();
 
 const initialState = {
   darkMode: Cookies.get('darkMode') === 'ON' ? true : false,
+  cart: {
+    cartItems: Cookies.get('cartItems')
+      ? JSON.parse(Cookies.get('cartItems'))
+      : [],
+  },
 };
 
 const reducer = (state, action) => {
@@ -13,6 +18,17 @@ const reducer = (state, action) => {
       return { ...state, darkMode: true };
     case 'DARK_MODE_OFF':
       return { ...state, darkMode: false };
+    case 'CART_ADD_ITEM': {
+      const newItem = action.payload;
+      const isExist = state.cart.cartItems.find(
+        (item) => item.name === newItem.name
+      );
+      const cartItems = isExist
+        ? [...state.cart.cartItems]
+        : [...state.cart.cartItems, newItem];
+      Cookies.set('cartItems', JSON.stringify(cartItems));
+      return { ...state, cart: { ...state.cart, cartItems } };
+    }
     default:
       return state;
   }
@@ -34,7 +50,6 @@ const StoreProvider = (props) => {
   }, [state]);
 
   const value = { state, dispatch, colors };
-  console.log(state);
 
   return <Store.Provider value={value}>{props.children}</Store.Provider>;
 };

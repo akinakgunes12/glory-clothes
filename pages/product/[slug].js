@@ -1,21 +1,28 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import data from '../../utils/data';
+import React, { useContext } from 'react';
 import Layout from '../../components/Layout';
 import Link from 'next/link';
-
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Card } from '../../components/base/Card';
+import Product from '../../models/Product';
+import db from '../../utils/db';
+import { Store } from '../../utils/Store';
+import axios from 'axios';
 
-const ProductScreen = () => {
-  const router = useRouter();
-
-  const { slug } = router.query;
-  const product = data.products.find((a) => a.slug === slug);
+const ProductScreen = (props) => {
+  const { dispatch } = useContext(Store);
+  const product = props.product;
 
   if (!product) {
     return <div>Product Not Found</div>;
   }
+
+  const addToCartHandler = async () => {
+    if (product.countInStock <= 0) {
+      window.alert('Sorry.Product is out of stock');
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
+  };
+
   return (
     <Layout title={product.name} description={product.description}>
       {/*Back Button */}
@@ -68,7 +75,8 @@ const ProductScreen = () => {
             <div className="flex justify-center">
               <button
                 type="button"
-                className="rounded-md text-black bg-amber-400 lg:w-3/4 w-2/4 mt-3 mb-3 p-2 hover:bg-amber-500   "
+                className="rounded-md text-black bg-amber-400 lg:w-3/4 w-2/4 mt-3 mb-3 p-2 hover:bg-amber-500"
+                onClick={addToCartHandler}
               >
                 Add to cart
               </button>
@@ -80,6 +88,21 @@ const ProductScreen = () => {
   );
 };
 export default ProductScreen;
+
+export async function getServerSideProps(context) {
+  console.log(context);
+  const { params } = context;
+  const { slug } = params;
+  await db.connect();
+  const products = await Product.findOne({ slug: slug });
+  const obj = JSON.parse(JSON.stringify(products));
+  await db.disconnect();
+  return {
+    props: {
+      product: obj,
+    },
+  };
+}
 
 // export async function getServerSideProps(context) {
 //   console.log(context);

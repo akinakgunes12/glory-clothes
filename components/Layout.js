@@ -3,14 +3,14 @@ import Head from 'next/head';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Container, Switch } from '@mui/material';
+import { Badge, Container, Switch } from '@mui/material';
 import Link from 'next/link';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
 
 export default function Layout({ title, description, children }) {
   const { state, dispatch, colors } = useContext(Store);
-  const { darkMode } = state;
+  const { darkMode, cart } = state;
 
   const darkModeChangeHandler = () => {
     dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });
@@ -42,8 +42,16 @@ export default function Layout({ title, description, children }) {
               checked={darkMode}
               onChange={darkModeChangeHandler}
             ></Switch>
-            <Link href="/login"> Cart</Link>
-            <Link href="/card">Login</Link>
+            <Link href="/cart">
+              {cart.cartItems.length > 0 ? (
+                <Badge color="secondary" badgeContent={cart.cartItems.length}>
+                  Cart
+                </Badge>
+              ) : (
+                'Cart'
+              )}
+            </Link>
+            <Link href="/login">Login</Link>
           </div>
         </Toolbar>
       </AppBar>
