@@ -4,7 +4,6 @@ const connection = {};
 
 const connect = async () => {
   // guard for connection is already setup
-
   if (connection.isConnected) {
     console.log('already connected');
     return;

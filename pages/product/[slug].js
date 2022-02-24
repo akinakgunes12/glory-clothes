@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
-import Layout from '../../components/Layout';
 import Link from 'next/link';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Card } from '../../components/base/Card';
 import Product from '../../models/Product';
 import db from '../../utils/db';
 import { Store } from '../../utils/Store';
-import axios from 'axios';
+import { useRouter } from 'next/router';
 
 const ProductScreen = (props) => {
+  const router = useRouter();
   const { dispatch } = useContext(Store);
   const product = props.product;
 
@@ -21,10 +21,11 @@ const ProductScreen = (props) => {
       window.alert('Sorry.Product is out of stock');
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
+    router.push('/CartScreen');
   };
 
   return (
-    <Layout title={product.name} description={product.description}>
+    <>
       {/*Back Button */}
       <div className="cursor-pointer">
         <Link href="/" passHref>
@@ -36,11 +37,11 @@ const ProductScreen = (props) => {
       </div>
       <div className="flex flex-col lg:flex-row gap-4">
         {/*LeftSide Image Part */}
-        <div className="flex-[6]">
+        <div className="flex-[6] flex justify-center">
           <img
             src={product.image}
             alt={product.name}
-            className="w-[85vh] lg:h-[80vh] "
+            className="w-[85vh] lg:h-[75vh] "
           />
         </div>
 
@@ -84,18 +85,19 @@ const ProductScreen = (props) => {
           </Card>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 export default ProductScreen;
 
 export async function getServerSideProps(context) {
-  console.log(context);
+  // console.log('buradayım context =>', context);
   const { params } = context;
+  // console.log('buradayım =>', params);
   const { slug } = params;
   await db.connect();
-  const products = await Product.findOne({ slug: slug });
-  const obj = JSON.parse(JSON.stringify(products));
+  const product = await Product.findOne({ slug });
+  const obj = JSON.parse(JSON.stringify(product));
   await db.disconnect();
   return {
     props: {
