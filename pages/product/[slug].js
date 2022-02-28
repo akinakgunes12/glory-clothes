@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 
 const ProductScreen = (props) => {
   const router = useRouter();
-  const { dispatch } = useContext(Store);
+  const { dispatch, state } = useContext(Store);
   const product = props.product;
 
   if (!product) {
@@ -17,11 +17,39 @@ const ProductScreen = (props) => {
   }
 
   const addToCartHandler = async () => {
-    if (product.countInStock <= 0) {
-      window.alert('Sorry.Product is out of stock');
+    const checkProductInCart = state.cart.cartItems.some(
+      (item) => product.slug === item.slug
+    );
+    console.log(checkProductInCart);
+    if (checkProductInCart) {
+      const targetIndex = state.cart.cartItems.findIndex(
+        (item) => product.slug === item.slug
+      );
+      const targetItem = state.cart.cartItems[targetIndex];
+      console.log(targetItem.countInStock, targetItem.quantity);
+
+      const stockCheck = targetItem.countInStock - targetItem.quantity > 0;
+      console.log(stockCheck);
+      if (!stockCheck) {
+        return window.alert('Sorry.Product is out of stock');
+      }
+
+      const newQuantity = state.cart.cartItems[targetIndex].quantity + 1;
+
+      dispatch({
+        type: 'INCREASE_QUANTITY_A_CART_ITEM',
+        payload: { newQuantity: newQuantity, slug: product.slug },
+      });
+      router.push('/cart');
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
-    router.push('/CartScreen');
+
+    if (!checkProductInCart) {
+      dispatch({
+        type: 'CART_ADD_ITEM',
+        payload: { ...product, quantity: 1 },
+      });
+      router.push('/cart');
+    }
   };
 
   return (

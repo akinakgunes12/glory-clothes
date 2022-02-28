@@ -1,3 +1,4 @@
+import { isOptionGroup } from '@mui/base';
 import Cookies from 'js-cookie';
 import { createContext, useEffect, useReducer, useState } from 'react';
 
@@ -18,14 +19,29 @@ const reducer = (state, action) => {
       return { ...state, darkMode: true };
     case 'DARK_MODE_OFF':
       return { ...state, darkMode: false };
+
+    case 'INCREASE_QUANTITY_A_CART_ITEM': {
+      const newQuantity = action.payload.newQuantity;
+      const slug = action.payload.slug;
+
+      const newCardItems = [...state.cart.cartItems];
+      const targetIndex = newCardItems.findIndex((item) => item.slug === slug);
+      newCardItems[targetIndex].quantity = newQuantity;
+
+      const stockCheck =
+        newCardItems[targetIndex].quantity <=
+        newCardItems[targetIndex].countInStock;
+
+      if (!stockCheck) {
+        return state;
+      }
+
+      return { ...state, cart: { ...state.cart, cartItems: newCardItems } }; // all state copy
+    }
+
     case 'CART_ADD_ITEM': {
       const newItem = action.payload;
-      const isExist = state.cart.cartItems.find(
-        (item) => item.name === newItem.name
-      );
-      const cartItems = isExist
-        ? [...state.cart.cartItems]
-        : [...state.cart.cartItems, newItem];
+      const cartItems = [...state.cart.cartItems, newItem];
       Cookies.set('cartItems', JSON.stringify(cartItems));
       return { ...state, cart: { ...state.cart, cartItems } };
     }

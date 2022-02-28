@@ -1,17 +1,16 @@
-import { ProductCardList } from '../components';
-import db from '../utils/db';
 import Product from '../models/Product';
+import db from '../utils/db';
+import { ProductCardList } from '../components/common/ProductCardList';
 
-export default function Home(props) {
-  const { products } = props;
-  console.log(products);
+export default function Home({ products }) {
   return (
     <div>
       <h1>Products</h1>
-      <ProductCardList />
+      <ProductCardList products={products} />
     </div>
   );
 }
+
 export async function getServerSideProps() {
   await db.connect();
   const products = await Product.find({});

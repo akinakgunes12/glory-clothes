@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Store } from '../utils/Store';
 import Link from 'next/Link';
 import { Card } from '../components/base/Card';
+
 import {
   Button,
   MenuItem,
@@ -15,9 +16,16 @@ import {
 } from '@mui/material';
 
 const CartScreen = () => {
-  const { state } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const cartItems = state.cart.cartItems;
-  console.log(cartItems);
+
+  const changeQuantityHandler = (e, slug) => {
+    const newQuantity = e.target.value;
+    dispatch({
+      type: 'INCREASE_QUANTITY_A_CART_ITEM',
+      payload: { newQuantity: newQuantity, slug: slug },
+    });
+  };
 
   return (
     <>
@@ -67,7 +75,12 @@ const CartScreen = () => {
                           </Link>
                         </TableCell>
                         <TableCell align="right">
-                          <Select value={item.quantity}>
+                          <Select
+                            value={item.quantity}
+                            onChange={(e) => {
+                              changeQuantityHandler(e, item.slug);
+                            }}
+                          >
                             {[...Array(item.countInStock).keys()].map((x) => {
                               return (
                                 <MenuItem key={x + 1} value={x + 1}>
@@ -106,7 +119,7 @@ const CartScreen = () => {
                   items){' '}
                 </li>
                 <li className=" text-center pb-3">
-                  $ {cartItems.reduce((a, c) => a + c.quantity + c.price, 0)}
+                  $ {cartItems.reduce((a, c) => a + c.quantity * c.price, 0)}
                 </li>
                 <li className="flex justify-center">
                   <button className="bg-amber-400 w-2/3 rounded-md p-1  items-center  ">
