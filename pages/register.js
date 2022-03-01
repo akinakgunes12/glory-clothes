@@ -6,14 +6,16 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 
-const Login = () => {
+const Register = () => {
   const router = useRouter();
   const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
   const { colors } = useContext(Store);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     if (userInfo) {
@@ -23,8 +25,13 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("passwords don't matched");
+      return;
+    }
     try {
-      const { data } = await axios.post('/api/users/login', {
+      const { data } = await axios.post('/api/users/register', {
+        name,
         email,
         password,
       });
@@ -54,9 +61,20 @@ const Login = () => {
           variant="h4"
           sx={{ paddingTop: '2rem', paddingLeft: '1rem' }}
         >
-          Login
+          Register
         </Typography>
         <List>
+          <ListItem>
+            <TextField
+              variant="outlined"
+              fullWidth
+              id="name"
+              label="Name"
+              inputProps={{ type: 'text' }}
+              style={{ color: 'red' }}
+              onChange={(e) => setName(e.target.value)}
+            ></TextField>
+          </ListItem>
           <ListItem>
             <TextField
               variant="outlined"
@@ -79,6 +97,16 @@ const Login = () => {
             ></TextField>
           </ListItem>
           <ListItem>
+            <TextField
+              variant="outlined"
+              fullWidth
+              id="confirmPassword"
+              label="Confirm Password"
+              inputProps={{ type: 'password' }}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            ></TextField>
+          </ListItem>
+          <ListItem>
             <Button
               type="submit"
               style={{
@@ -87,14 +115,14 @@ const Login = () => {
                 backgroundColor: '#ffcf33',
               }}
             >
-              Login
+              Register
             </Button>
           </ListItem>
           <ListItem>
-            Don't have an account? &nbsp;
+            Already have an account? &nbsp;
             <div className="text-yellow-600 hover:cursor-pointer hover:underline">
-              <Link href={`/register?redirect=${redirect || '/'}`} passHref>
-                Register
+              <Link href={`/login?redirect=${redirect || '/'}`} passHref>
+                Login
               </Link>
             </div>
           </ListItem>
@@ -104,4 +132,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
