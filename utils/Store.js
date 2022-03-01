@@ -1,4 +1,3 @@
-import { isOptionGroup } from '@mui/base';
 import Cookies from 'js-cookie';
 import { createContext, useEffect, useReducer, useState } from 'react';
 
@@ -11,6 +10,9 @@ const initialState = {
       ? JSON.parse(Cookies.get('cartItems'))
       : [],
   },
+  userInfo: Cookies.get('userInfo')
+    ? JSON.parse(Cookies.get('userInfo'))
+    : null,
 };
 
 const reducer = (state, action) => {
@@ -25,6 +27,7 @@ const reducer = (state, action) => {
       const slug = action.payload.slug;
 
       const newCardItems = [...state.cart.cartItems];
+      console.log(newCardItems);
       const targetIndex = newCardItems.findIndex((item) => item.slug === slug);
       newCardItems[targetIndex].quantity = newQuantity;
 
@@ -35,16 +38,31 @@ const reducer = (state, action) => {
       if (!stockCheck) {
         return state;
       }
-
       return { ...state, cart: { ...state.cart, cartItems: newCardItems } }; // all state copy
     }
-
     case 'CART_ADD_ITEM': {
       const newItem = action.payload;
       const cartItems = [...state.cart.cartItems, newItem];
       Cookies.set('cartItems', JSON.stringify(cartItems));
       return { ...state, cart: { ...state.cart, cartItems } };
     }
+    case 'CART_DELETE_ITEM': {
+      const slug = action.payload.slug;
+      const existCardItems = [...state.cart.cartItems];
+      const targetItem = existCardItems.find((item) => item.slug === slug);
+      const newCartItems = existCardItems.filter((item) => {
+        return item.slug !== targetItem.slug;
+      });
+      Cookies.set('cartItems', JSON.stringify(newCartItems));
+      return { ...state, cart: { ...state.cart, cartItems: newCartItems } };
+    }
+    case 'USER_LOGIN': {
+      return { ...state, userInfo: action.payload };
+    }
+    case 'USER_LOGOUT': {
+      return { ...state, userInfo: null, cart: { cartItems: [] } };
+    }
+
     default:
       return state;
   }
@@ -62,8 +80,9 @@ const StoreProvider = (props) => {
       text: state.darkMode ? 'white' : 'black',
       backgroundColor: state.darkMode ? 'black' : 'white',
       backCardColor: state.darkMode ? '#333232' : 'white',
+      backCartColor: state.darkMode ? 'black' : 'gray',
     });
-  }, [state]);
+  }, [state.darkMode]);
 
   const value = { state, dispatch, colors };
 

@@ -23,16 +23,18 @@ export const ProductCard = ({ image, name, price, slug }) => {
           </Link>
           <div className="flex justify-between">
             <div className="text-xl">{price}$</div>
-            <button
-              style={{
-                color: 'black',
-                backgroundColor: '#fbbf24',
-                borderRadius: '15px',
-                padding: '7px',
-              }}
-            >
-              Add to card
-            </button>
+            <Link href={`/product/${slug}`} passHref>
+              <button
+                style={{
+                  color: 'black',
+                  backgroundColor: '#fbbf24',
+                  borderRadius: '15px',
+                  padding: '7px',
+                }}
+              >
+                Go to product
+              </button>
+            </Link>
           </div>
         </div>
       </div>

@@ -25,11 +25,11 @@ const ProductScreen = (props) => {
       const targetIndex = state.cart.cartItems.findIndex(
         (item) => product.slug === item.slug
       );
+
       const targetItem = state.cart.cartItems[targetIndex];
-      console.log(targetItem.countInStock, targetItem.quantity);
 
       const stockCheck = targetItem.countInStock - targetItem.quantity > 0;
-      console.log(stockCheck);
+
       if (!stockCheck) {
         return window.alert('Sorry.Product is out of stock');
       }
