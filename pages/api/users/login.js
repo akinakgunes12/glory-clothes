@@ -8,12 +8,13 @@ const handler = nc();
 
 handler.post(async (req, res) => {
   await db.connect();
-  const user = await User.findOne({ email: req.body.email });
+  const user = await User.findOne({ email: req.body.email }); // DB check
   await db.disconnect();
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
+    // password and user check
     const token = signToken(user);
     res.send({
-      token,
+      token: token,
       _id: user._id,
       name: user.name,
       email: user.email,

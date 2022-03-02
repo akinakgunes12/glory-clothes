@@ -7,24 +7,35 @@ import { signToken } from '../../../utils/auth';
 const handler = nc();
 
 handler.post(async (req, res) => {
-  await db.connect();
-  const newUser = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password),
-    isAdmin: false,
-  });
-  const user = await newUser.save();
-  await db.disconnect();
+  try {
+    await db.connect();
 
-  const token = signToken(user);
-  res.send({
-    token,
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    isAdmin: user.isAdmin,
-  });
+    // check if email is already use
+    const userCheck = await User.findOne({ email: req.body.email }); // DB check
+    if (userCheck) {
+      res.status(401).send({ message: 'The email is already used' });
+    }
+
+    const newUser = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password),
+      isAdmin: false,
+    });
+    const user = await newUser.save(); // DBye kaydettik
+    await db.disconnect();
+
+    const token = signToken(user);
+    res.send({
+      token,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 export default handler;

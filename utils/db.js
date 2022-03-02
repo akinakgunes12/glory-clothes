@@ -18,11 +18,14 @@ const connect = async () => {
     }
     await mongoose.disconnect();
   }
-  const db = await mongoose.connect('mongodb://localhost/glory-clothes', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  });
+  const db = await mongoose.connect(
+    'mongodb+srv://akin:starking44@cluster0.ukpmt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    }
+  );
   console.log('new connection');
   connection.isConnected = db.connections[0].readyState;
 };
