@@ -68,7 +68,11 @@ export default function Layout({ title, description, children }) {
             ></Switch>
             <Link href="/cart">
               {cart.cartItems.length > 0 ? (
-                <Badge color="secondary" badgeContent={cart.cartItems.length}>
+                <Badge
+                  color="secondary"
+                  badgeContent={cart.cartItems.length}
+                  style={{ cursor: 'pointer' }}
+                >
                   Cart
                 </Badge>
               ) : (
