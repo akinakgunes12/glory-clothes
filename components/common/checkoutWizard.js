@@ -7,6 +7,7 @@ export const CheckoutWizard = ({ activeStep = 0 }) => {
     <Stepper
       activeStep={activeStep}
       alternativeLabel
+      style={{ backgroundColor: 'transparent' }}
       //   sx={{ '& .MuiStepper-root': { color: 'red' } }}
     >
       {['Login', 'Shipping Address', 'Payment Method', 'Place Order'].map(

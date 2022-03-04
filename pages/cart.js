@@ -1,10 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Store } from '../utils/Store';
 import Link from 'next/Link';
 import { Card } from '../components/base/Card';
 
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   MenuItem,
   Select,
   Table,
@@ -20,6 +25,7 @@ const CartScreen = () => {
   const router = useRouter();
   const { state, dispatch, colors } = useContext(Store);
   const cartItems = state.cart.cartItems;
+  const [open, setOpen] = useState(false);
 
   const changeQuantityHandler = (e, slug) => {
     const newQuantity = e.target.value;
@@ -39,7 +45,19 @@ const CartScreen = () => {
   };
 
   const checkoutHandler = () => {
-    router.push('/shipping');
+    setOpen(true);
+    if (state.userInfo) {
+      router.push('/shipping');
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleLoginButton = () => {
+    setOpen(false);
+    router.push('/login?redirect=/shipping');
   };
 
   return (
@@ -173,6 +191,28 @@ const CartScreen = () => {
           </div>
         </div>
       )}
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle
+          id="alert-dialog-title"
+          style={{ backgroundColor: 'white' }}
+        >
+          {'Do you want to buy the product?'}
+        </DialogTitle>
+        <DialogContent style={{ backgroundColor: 'white' }}>
+          <DialogContentText
+            id="alert-dialog-description"
+            style={{ fontWeight: 'bold' }}
+          >
+            You are not logged in, please login
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions style={{ backgroundColor: 'white' }}>
+          <Button style={{ fontWeight: 'bold' }} onClick={handleLoginButton}>
+            Login
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

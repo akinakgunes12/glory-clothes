@@ -31,22 +31,20 @@ const Shipping = () => {
       router.push('/login?redirect=/shipping');
     }
     // refresh =>  (dont close your informations)
-    setValue('fullName', shippingAddress.fullName);
-    setValue('address', shippingAddress.address);
-    setValue('city', shippingAddress.city);
-    setValue('postalCode', shippingAddress.postalCode);
-    setValue('country', shippingAddress.country);
+    if (userInfo && shippingAddress) {
+      setValue('fullName', shippingAddress.fullName);
+      setValue('address', shippingAddress.address);
+      setValue('city', shippingAddress.city);
+      setValue('postalCode', shippingAddress.postalCode);
+      setValue('country', shippingAddress.country);
+    }
   }, []);
 
   const submitHandler = ({ fullName, address, city, postalCode, country }) => {
     setSpinner(true);
     dispatch({
       type: 'SAVE_SHIPPING_ADDRESS',
-      payload: fullName,
-      address,
-      city,
-      postalCode,
-      country,
+      payload: { fullName, address, city, postalCode, country },
     });
     Cookies.set('shippingAddress', {
       fullName,
@@ -59,13 +57,12 @@ const Shipping = () => {
   };
 
   return (
-    <div className=" items-center flex flex-col justify-center h-[85vh] ">
+    <div className="flex flex-col  h-[85vh] ">
       <CheckoutWizard activeStep={1} />
       <form
         onSubmit={handleSubmit(submitHandler)}
         style={{
           backgroundColor: colors.backCardColor,
-          minWidth: '400px',
           padding: '20px',
         }}
       >
