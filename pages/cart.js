@@ -69,7 +69,7 @@ const CartScreen = () => {
         </div>
       ) : (
         <div className="flex lg:flex-row flex-col  gap-10 ">
-          <div className="flex lg:flex-[9] justify-center">
+          <div className="flex lg:flex-[9] flex-[12] justify-center">
             <TableContainer>
               <Table>
                 <TableHead>
@@ -168,7 +168,7 @@ const CartScreen = () => {
               </Table>
             </TableContainer>
           </div>
-          <div className="flex lg:flex-[3] w-1/2 m-auto  justify-center  font-bold text-xl">
+          <div className="flex lg:flex-[3] flex-[12] m-auto  justify-center  font-bold text-xl">
             <Card>
               <ul className="w-full p-3">
                 <li className=" pb-3 pt-3 pl-10 pr-10 text-center">
