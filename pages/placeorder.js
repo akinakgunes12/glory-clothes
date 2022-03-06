@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Store } from '../utils/Store';
 import Link from 'next/Link';
 import { Card } from '../components/base/Card';
-
 import {
+  CircularProgress,
   List,
   ListItem,
   Table,
@@ -16,25 +16,65 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { CheckoutWizard } from '../components/common';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Placeorder = () => {
   const router = useRouter();
   const { state, dispatch, colors } = useContext(Store);
-  const cartItems = state.cart.cartItems;
-  const shippingAddress = state.cart.shippingAddress;
-  const paymentMethod = state.cart.paymentMethod;
-  const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100;
-  const itemPrice = round2(
+  const {
+    userInfo,
+    cart: { cartItems, shippingAddress, paymentMethod },
+  } = state;
+  const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
+  const itemsPrice = round2(
     cartItems.reduce((a, c) => a + c.price * c.quantity, 0)
   );
-  const shippingPrice = itemPrice > 200 ? 0 : 15;
-  const taxPrice = round2(itemPrice * 0.15);
-  const totalPrice = round2(itemPrice + shippingPrice + taxPrice);
+  const shippingPrice = itemsPrice > 200 ? 0 : 15;
+  const taxPrice = round2(itemsPrice * 0.15);
+  const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 
   useEffect(() => {
-    if (!paymentMethod) router.push('/payment');
+    if (!paymentMethod) {
+      router.push('/payment');
+    }
+    console.log(paymentMethod);
+    if (cartItems.length === 0) {
+      router.push('/cart');
+    }
   }, []);
 
+  const [loading, setLoading] = useState(false);
+  const placeOrderHandler = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        '/api/orders',
+        {
+          orderItems: cartItems,
+          shippingAddress,
+          paymentMethod,
+          itemsPrice,
+          shippingPrice,
+          taxPrice,
+          totalPrice,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+      dispatch({ type: 'CART_CLEAR' });
+      Cookies.remove('cartItems');
+      setLoading(false);
+      router.push(`/order/${data._id}`);
+    } catch (err) {
+      setLoading(false);
+      toast.error(err);
+    }
+  };
   return (
     <>
       <CheckoutWizard activeStep={3}></CheckoutWizard>
@@ -164,7 +204,9 @@ const Placeorder = () => {
                 <li className=" pb-3 pt-3 pl-10 pr-10  font-bold text-center">
                   Order Summary
                 </li>
-                <li className=" text-center pb-3">Items:&nbsp;$ {itemPrice}</li>
+                <li className=" text-center pb-3">
+                  Items:&nbsp;$ {itemsPrice}
+                </li>
                 <li className=" text-center pb-3">Tax:&nbsp;$ {taxPrice}</li>
                 <li className=" text-center pb-3">
                   Shipping:&nbsp;$ {shippingPrice}
@@ -173,8 +215,11 @@ const Placeorder = () => {
                   Total:&nbsp;$ {totalPrice}
                 </li>
                 <li className="flex justify-center lg:flex-[6] flex-[12]">
-                  <button className="bg-amber-400 lg:w-2/3 w-8/12  rounded-md p-1  items-center">
-                    Place Order
+                  <button
+                    onClick={placeOrderHandler}
+                    className="bg-amber-400 lg:w-2/3 w-8/12  rounded-md p-1  items-center"
+                  >
+                    {loading === true ? <CircularProgress /> : 'Place Order'}
                   </button>
                 </li>
               </ul>
