@@ -29,7 +29,7 @@ const CartScreen = () => {
 
   const changeQuantityHandler = (e, slug) => {
     const newQuantity = e.target.value;
-    console.log(slug);
+  
 
     dispatch({
       type: 'INCREASE_QUANTITY_A_CART_ITEM',

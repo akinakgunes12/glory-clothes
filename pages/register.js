@@ -39,7 +39,7 @@ const Register = () => {
       return;
     }
 
-    console.log(email, name);
+   
     setSpinner(true);
     try {
       const { data } = await axios.post('/api/users/register', {
@@ -49,7 +49,7 @@ const Register = () => {
       });
       dispatch({ type: 'USER_LOGIN', payload: data });
 
-      console.log(data);
+     
 
       Cookies.set('userInfo', data);
       router.push(redirect || '/');

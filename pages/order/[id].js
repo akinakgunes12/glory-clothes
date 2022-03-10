@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Store } from '../utils/Store';
+import React, { useContext, useEffect,useState } from 'react';
+import { Store } from '../../utils/Store';
 import Link from 'next/Link';
-import { Card } from '../components/base/Card';
+import { Card } from '../../components/base/Card';
 import {
-  CircularProgress,
   List,
   ListItem,
   Table,
@@ -15,80 +14,40 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
-import { CheckoutWizard } from '../components/common';
-import toast from 'react-hot-toast';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import { CheckoutWizard } from '../../components/common';
+import db from '../../utils/db';
+import OrderModel from '../../models/Orders';
 
-const Placeorder = () => {
+
+const Order = ({order}) => {
   const router = useRouter();
   const { state, dispatch, colors } = useContext(Store);
   const {
     userInfo,
-    cart: { cartItems, shippingAddress, paymentMethod },
   } = state;
-  const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
-  const itemsPrice = round2(
-    cartItems.reduce((a, c) => a + c.price * c.quantity, 0)
-  );
-  const shippingPrice = itemsPrice > 200 ? 0 : 15;
-  const taxPrice = round2(itemsPrice * 0.15);
-  const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+  const {shippingAddress, paymentMethod, orderItems, itemsPrice, taxPrice, shippingPrice,totalPrice} = order
+  const[loading, setLoading] = useState(false)
+  console.log(order)
 
   useEffect(() => {
-    if (!paymentMethod) {
-      router.push('/payment');
+    if(!userInfo) {
+      return router.push("/login")
     }
-    console.log(paymentMethod);
-    if (cartItems.length === 0) {
-      router.push('/cart');
-    }
-  }, []);
+   
+  },[])
 
-  const [loading, setLoading] = useState(false);
-  const placeOrderHandler = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.post('/api/orders',
-        {
-          orderItems: cartItems,
-          shippingAddress,
-          paymentMethod,
-          itemsPrice,
-          shippingPrice,
-          taxPrice,
-          totalPrice,
-        },
-        {
-          headers: {
-            authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
-      dispatch({ type: 'CART_CLEAR' });
-      Cookies.remove('cartItems');
-      setLoading(false);
-      router.push(`/order/${data._id}`);
-    } catch (err) {
-      setLoading(false);
-      // toast.error(err);
-    }
-  };
+  
   return (
     <>
       <CheckoutWizard activeStep={3}></CheckoutWizard>
-      <p className=" md:text-4xl text-lg  mt-12 mb-5 ">Place Order</p>
-      {cartItems.length === 0 ? (
-        <div>
-          Cart is empty. <Link href="/">Go Shopping</Link>
-        </div>
-      ) : (
+      <p className=" md:text-3xl text-lg  mt-12 mb-5 ">Order {order._id}</p>
+      
         <div className="flex lg:flex-row flex-col">
           <div className="flex flex-col lg:flex-[9]">
             <Card>
               <List>
                 <ListItem>
-                  <Typography style={{ fontWeight: 'bold' }}>
+                  <Typography component="h5" variant="h5">
                     Shipping Address
                   </Typography>
                 </ListItem>
@@ -103,7 +62,7 @@ const Placeorder = () => {
             <Card>
               <List>
                 <ListItem>
-                  <Typography style={{ fontWeight: 'bold' }}>
+                  <Typography component="h5" variant="h5">
                     Payment Method
                   </Typography>
                 </ListItem>
@@ -148,7 +107,7 @@ const Placeorder = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {cartItems.map((item) => {
+                        {orderItems.map((item) => {
                           return (
                             <TableRow key={item._id}>
                               <TableCell>
@@ -213,21 +172,42 @@ const Placeorder = () => {
                 <li className=" text-center pb-3 font-bold ">
                   Total:&nbsp;$ {totalPrice}
                 </li>
-                <li className="flex justify-center lg:flex-[6] flex-[12]">
-                  <button
-                    onClick={placeOrderHandler}
-                    className="bg-amber-400 lg:w-2/3 w-8/12  rounded-md p-1  items-center"
-                  >
-                    {loading === true ? <CircularProgress /> : 'Place Order'}
-                  </button>
-                </li>
+                
               </ul>
             </Card>
           </div>
-        </div>
-      )}
+        </div> 
+
+      
     </>
   );
 };
 
-export default Placeorder;
+export async function getServerSideProps(context) {
+  
+    const {id} = context.params
+    let orderFormatted;
+    try {
+    await db.connect();
+    const order = await OrderModel.findById(id);
+    orderFormatted = JSON.parse(JSON.stringify(order))
+    await db.disconnect();
+    } catch (err) {
+      return {
+        redirect: {
+          destination: '/',
+        },
+      }
+    }
+    
+
+    return {
+        props: {
+          order: orderFormatted
+        }
+    }
+}
+
+
+
+export default Order;

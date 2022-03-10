@@ -18,6 +18,7 @@ import { Store } from '../utils/Store';
 const Payment = () => {
   const { dispatch, state } = useContext(Store);
   const [paymentMethod, setPaymentMethod] = useState('');
+  
 
   const {
     cart: { shippingAddress },
@@ -27,8 +28,9 @@ const Payment = () => {
       router.push('/shipping');
     } else {
       setPaymentMethod(Cookies.get('paymentMethod'));
+     
     }
-  }, []);
+  }, []); 
 
   const submitHandler = (e) => {
     e.preventDefault();

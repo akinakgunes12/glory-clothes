@@ -11,6 +11,8 @@ const ProductScreen = (props) => {
   const router = useRouter();
   const { dispatch, state } = useContext(Store);
   const product = props.product;
+ 
+  
 
   if (!product) {
     return <div>Product Not Found</div>;
@@ -20,21 +22,24 @@ const ProductScreen = (props) => {
     const checkProductInCart = state.cart.cartItems.some(
       (item) => product.slug === item.slug
     );
-    console.log(checkProductInCart);
+   
     if (checkProductInCart) {
       const targetIndex = state.cart.cartItems.findIndex(
         (item) => product.slug === item.slug
       );
 
       const targetItem = state.cart.cartItems[targetIndex];
+      
 
-      const stockCheck = targetItem.countInStock - targetItem.quantity > 0;
+      const stockCheck = targetItem.countInStock
+       - targetItem.quantity > 0;
 
       if (!stockCheck) {
         return window.alert('Sorry.Product is out of stock');
       }
 
-      const newQuantity = state.cart.cartItems[targetIndex].quantity + 1;
+      const newQuantity = state.cart.cartItems[targetIndex].quantity
+       + 1;
 
       dispatch({
         type: 'INCREASE_QUANTITY_A_CART_ITEM',
@@ -119,7 +124,7 @@ const ProductScreen = (props) => {
 export default ProductScreen;
 
 export async function getServerSideProps(context) {
-  // console.log('buradayım context =>', context);
+  // console.log(context)
   const { params } = context;
   // console.log('buradayım =>', params);
   const { slug } = params;
@@ -134,18 +139,4 @@ export async function getServerSideProps(context) {
   };
 }
 
-// export async function getServerSideProps(context) {
-//   console.log(context);
 
-//   const response = await fetch('http://localhost:3000/api/allProducts');
-//   const data = await response.json();
-
-//   const { slug } = context.params;
-//   const product = data.products.find((a) => a.slug === slug);
-
-//   return {
-//     props: {
-//       product: product,
-//     }, // will be passed to the page component as props
-//   };
-// }

@@ -33,7 +33,8 @@ const reducer = (state, action) => {
       const slug = action.payload.slug;
 
       const newCardItems = [...state.cart.cartItems];
-      console.log(newCardItems);
+      
+
       const targetIndex = newCardItems.findIndex((item) => item.slug === slug);
       newCardItems[targetIndex].quantity = newQuantity;
 
@@ -67,7 +68,7 @@ const reducer = (state, action) => {
     }
     case 'USER_LOGOUT': {
       Cookies.remove('userInfo');
-      return { ...state, userInfo: null, cart: { cartItems: [] } };
+      return { ...state, userInfo: null, cart: { cartItems: [],shippingAddress:{}, paymentMethod:" " } };
     }
     case 'SAVE_SHIPPING_ADDRESS': {
       return {
@@ -81,7 +82,10 @@ const reducer = (state, action) => {
         cart: { ...state.cart, paymentMethod: action.payload },
       };
     }
-
+    case "CART_CLEAR": {
+      return {...state, cart:{...state.cart,cartItems:[]}}
+     }  
+    
     default:
       return state;
   }

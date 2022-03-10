@@ -37,7 +37,7 @@ const Login = () => {
         email: email,
         password: password,
       });
-      console.log(data);
+    
       dispatch({ type: 'USER_LOGIN', payload: data });
       Cookies.set('userInfo', data);
       // spinner kapa

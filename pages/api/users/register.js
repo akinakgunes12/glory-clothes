@@ -34,7 +34,7 @@ handler.post(async (req, res) => {
       isAdmin: user.isAdmin,
     });
   } catch (err) {
-    console.log(err);
+    
   }
 });
 

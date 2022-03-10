@@ -204,7 +204,7 @@ const Shipping = () => {
                   variant="outlined"
                   fullWidth
                   id="Country"
-                  label="Full Name"
+                  label="Country"
                   style={{ color: 'red' }}
                   error={Boolean(errors.country)}
                   helperText={
