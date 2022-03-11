@@ -25,7 +25,7 @@ const Order = ({order}) => {
   const {
     userInfo,
   } = state;
-  const {shippingAddress, paymentMethod, orderItems, itemsPrice, taxPrice, shippingPrice,totalPrice} = order
+  const {shippingAddress, paymentMethod, orderItems, itemsPrice, taxPrice, shippingPrice,totalPrice,isPaid,paidAt,isDelivered,deliveredAt} = order
   const[loading, setLoading] = useState(false)
   console.log(order)
 
@@ -56,6 +56,9 @@ const Order = ({order}) => {
                   {shippingAddress.city}, {shippingAddress.postalCode},{' '}
                   {shippingAddress.country}
                 </ListItem>
+                <ListItem>
+                 Status: {isDelivered? `delivered at ${deliveredAt}`: "not delivered"}
+                </ListItem>
               </List>
             </Card>
             <div style={{ marginBottom: '0.5rem' }}></div>
@@ -67,6 +70,9 @@ const Order = ({order}) => {
                   </Typography>
                 </ListItem>
                 <ListItem>{paymentMethod}</ListItem>
+                <ListItem>
+                 Status: {isPaid? `paid at ${paidAt}`: "not paid"}
+                </ListItem>
               </List>
             </Card>
             <div style={{ marginBottom: '0.5rem' }}></div>
