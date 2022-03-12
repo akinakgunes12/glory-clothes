@@ -16,6 +16,7 @@ const signToken = (user) => {
 };
 
 const isAuth = async (req, res, next) => {
+  try {
   const { authorization } = req.headers;
   if (authorization) {
     // Bearer xxx => xxx
@@ -31,6 +32,10 @@ const isAuth = async (req, res, next) => {
   } else {
     res.status(401).send({ message: 'Token is not suppiled' });
   }
+} catch(err) {
+  res.status(401).send({ message: err });
+
+}
 };
 
 export { signToken, isAuth };

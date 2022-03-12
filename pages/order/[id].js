@@ -1,4 +1,4 @@
-import React, { useContext, useEffect,useState } from 'react';
+import React, { useContext, useEffect} from 'react';
 import { Store } from '../../utils/Store';
 import Link from 'next/Link';
 import { Card } from '../../components/base/Card';
@@ -17,25 +17,46 @@ import { useRouter } from 'next/router';
 import { CheckoutWizard } from '../../components/common';
 import db from '../../utils/db';
 import OrderModel from '../../models/Orders';
+import getStripe from '../../stripe/getStripe';
 
 
 const Order = ({order}) => {
   const router = useRouter();
-  const { state, dispatch, colors } = useContext(Store);
+  const { state, colors } = useContext(Store);
   const {
     userInfo,
   } = state;
+  const cartItems = state.cart.cartItems
+  
+  
   const {shippingAddress, paymentMethod, orderItems, itemsPrice, taxPrice, shippingPrice,totalPrice,isPaid,paidAt,isDelivered,deliveredAt} = order
-  const[loading, setLoading] = useState(false)
-  console.log(order)
+  
 
   useEffect(() => {
     if(!userInfo) {
       return router.push("/login")
     }
    
-  },[])
+  },[order])
+  
+  const payHandler = () => {
+    const redirectToCheckout = async () => {
+      // create stripe checkout
+      await axios.post("api/checkoutSessions", {
+        items: cartItems.map((item) => {
+          return {
+            price:item.stripeId,
+            quantity:item.quantity,
+          }
+        })
+      })
 
+
+      // redirect to checkout 
+      const stripe = await getStripe();
+      await stripe.redirectToCheckout({sessionId:id})
+    }
+  }
   
   return (
     <>
@@ -178,8 +199,16 @@ const Order = ({order}) => {
                 <li className=" text-center pb-3 font-bold ">
                   Total:&nbsp;$ {totalPrice}
                 </li>
-                
+                <li className="flex justify-center lg:flex-[6] flex-[12]">
+                  <button
+                    onClick={payHandler}
+                    className="bg-amber-400 lg:w-2/3 w-8/12  rounded-md p-1  items-center"
+                  >
+                    Pay with Stripe
+                  </button>
+                </li>
               </ul>
+              
             </Card>
           </div>
         </div> 
@@ -205,15 +234,11 @@ export async function getServerSideProps(context) {
         },
       }
     }
-    
-
     return {
         props: {
-          order: orderFormatted
+          order: orderFormatted,
         }
     }
 }
-
-
 
 export default Order;
