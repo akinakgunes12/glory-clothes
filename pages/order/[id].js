@@ -1,6 +1,6 @@
 import React, { useContext, useEffect} from 'react';
 import { Store } from '../../utils/Store';
-import Link from 'next/Link';
+import Link from 'next/link';
 import { Card } from '../../components/base/Card';
 import {
   List,
