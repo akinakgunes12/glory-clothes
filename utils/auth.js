@@ -7,8 +7,7 @@ const signToken = (user) => {
       email: user.email,
       isAdmin: user.isAdmin,
     },
-
-    process.env.JWT_SECRET,
+    `${process.env.JWT_SECRET_KEY}`,
     {
       expiresIn: '30d',
     }
