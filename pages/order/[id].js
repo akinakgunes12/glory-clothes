@@ -18,7 +18,7 @@ import { CheckoutWizard } from '../../components/common';
 import db from '../../utils/db';
 import OrderModel from '../../models/Orders';
 import getStripe from '../../stripe/getStripe';
-
+import axios from "axios"
 
 const Order = ({order}) => {
   const router = useRouter();
@@ -41,7 +41,11 @@ const Order = ({order}) => {
   
   const redirectToCheckout = async () => {
     // create stripe checkout
-    await axios.post("api/checkoutSessions", {
+    try {
+    const url = window.location.origin + "/api/checkout_sessions"
+    console.log(url)
+    console.log(router)
+    const response = await axios.post("http://localhost:3000/api/checkout_sessions", {
       items: cartItems.map((item) => {
         return {
           price:item.stripeId,
@@ -49,11 +53,14 @@ const Order = ({order}) => {
         }
       })
     })
+  }catch(err) {
+    console.log(err)
+  }
+    // const id = response.data.id;
 
-
-    // redirect to checkout 
-    const stripe = await getStripe();
-    await stripe.redirectToCheckout({sessionId:id})
+    // // redirect to checkout 
+    // const stripe = await getStripe();
+    // await stripe.redirectToCheckout({sessionId:id})
   }
   
   return (
