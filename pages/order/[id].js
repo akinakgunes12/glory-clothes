@@ -43,9 +43,7 @@ const Order = ({order}) => {
     // create stripe checkout
     try {
     const url = window.location.origin + "/api/checkout_sessions"
-    console.log(url)
-    console.log(router)
-    const response = await axios.post("http://localhost:3000/api/checkout_sessions", {
+    const response = await axios.post(url, {
       items: cartItems.map((item) => {
         return {
           price:item.stripeId,
@@ -53,6 +51,7 @@ const Order = ({order}) => {
         }
       })
     })
+    console.log(response)
   }catch(err) {
     console.log(err)
   }
