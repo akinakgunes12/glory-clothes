@@ -39,23 +39,21 @@ const Order = ({order}) => {
    
   },[order])
   
-  const payHandler = () => {
-    const redirectToCheckout = async () => {
-      // create stripe checkout
-      await axios.post("api/checkoutSessions", {
-        items: cartItems.map((item) => {
-          return {
-            price:item.stripeId,
-            quantity:item.quantity,
-          }
-        })
+  const redirectToCheckout = async () => {
+    // create stripe checkout
+    await axios.post("api/checkoutSessions", {
+      items: cartItems.map((item) => {
+        return {
+          price:item.stripeId,
+          quantity:item.quantity,
+        }
       })
+    })
 
 
-      // redirect to checkout 
-      const stripe = await getStripe();
-      await stripe.redirectToCheckout({sessionId:id})
-    }
+    // redirect to checkout 
+    const stripe = await getStripe();
+    await stripe.redirectToCheckout({sessionId:id})
   }
   
   return (
@@ -201,7 +199,7 @@ const Order = ({order}) => {
                 </li>
                 <li className="flex justify-center lg:flex-[6] flex-[12]">
                   <button
-                    onClick={payHandler}
+                    onClick={redirectToCheckout}
                     className="bg-amber-400 lg:w-2/3 w-8/12  rounded-md p-1  items-center"
                   >
                     Pay with Stripe
