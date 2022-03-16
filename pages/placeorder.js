@@ -65,8 +65,7 @@ const Placeorder = () => {
           },
         }
       );
-      dispatch({ type: 'CART_CLEAR' });
-      Cookies.remove('cartItems');
+     
       setLoading(false);
       router.push(`/order/${data._id}`);
     } catch (err) {

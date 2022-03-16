@@ -38,29 +38,24 @@ const Order = ({order}) => {
     }
    
   },[order])
-  
+  console.log(cartItems)
   const redirectToCheckout = async () => {
-    // create stripe checkout
-    try {
-    const url = window.location.origin + "/api/checkout_sessions"
-    const response = await axios.post(url, {
+    // Create Stripe checkout
+    const {
+      data: { id },
+    } = await axios.post('/api/checkout_sessions', {
       items: cartItems.map((item) => {
         return {
-          price:item.stripeId,
-          quantity:item.quantity,
+          price: item.stripeId,
+          quantity: item.quantity
         }
-      })
-    })
-    console.log(response)
-  }catch(err) {
-    console.log(err)
-  }
-    // const id = response.data.id;
+      }),
+    });
 
-    // // redirect to checkout 
-    // const stripe = await getStripe();
-    // await stripe.redirectToCheckout({sessionId:id})
-  }
+    // Redirect to checkout
+    const stripe = await getStripe();
+    await stripe.redirectToCheckout({ sessionId: id });
+  };
   
   return (
     <>
