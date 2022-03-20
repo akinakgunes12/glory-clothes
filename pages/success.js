@@ -18,10 +18,10 @@ const Success = () => {
     <div className="container xl:max-w-screen-xl mx-auto py-12 px-6 text-center">
     <div className="cursor-pointer">
     <Link href="/" passHref>
-      <a className="mb-3 mt-3 hover:underline ">
+      <p className="mb-3 mt-3 hover:underline ">
         {' '}
         <KeyboardBackspaceIcon /> back to products
-      </a>
+      </p>
     </Link>
     </div>
         <div className="py-4 px-8 rounded-md bg-gray-100 max-w-lg mx-auto">
