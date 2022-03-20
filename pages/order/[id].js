@@ -49,8 +49,10 @@ const Order = ({order}) => {
           price: item.stripeId,
           quantity: item.quantity
         }
+        console.log(price)
       }),
     });
+
 
     // Redirect to checkout
     const stripe = await getStripe();
