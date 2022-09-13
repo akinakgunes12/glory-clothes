@@ -62,10 +62,10 @@ export default function Layout({ title, description, children }) {
 
           {/** Nav Links **/}
           <div className="flex gap-5 items-center">
-            <Switch
+            {/* <Switch
               checked={darkMode}
               onChange={darkModeChangeHandler}
-            ></Switch>
+            ></Switch> */}
             <Link href="/cart">
               {cart.cartItems.length > 0 ? (
                 <Badge
